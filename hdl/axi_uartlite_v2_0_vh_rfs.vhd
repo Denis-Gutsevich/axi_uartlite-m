@@ -398,7 +398,8 @@ entity uartlite_tx is
     Reset_TX_FIFO   : in  std_logic;
     TX_Data         : in  std_logic_vector(0 to C_DATA_BITS-1);
     TX_Buffer_Full  : out std_logic;
-    TX_Buffer_Empty : out std_logic
+    TX_Buffer_Empty : out std_logic;
+	nRe_De          : out std_logic
    );
 end entity uartlite_tx;
 
@@ -449,6 +450,7 @@ attribute DowngradeIPIdentifiedWarnings of RTL : architecture is "yes";
     signal fifo_rd           : std_logic;
     signal tx_buffer_full_i  : std_logic;
     signal TX_FIFO_Reset     : std_logic;
+	signal tx_nre_de         : std_logic := '0';
 
 begin  -- architecture IMP
 
@@ -645,9 +647,27 @@ begin  -- architecture IMP
     begin  -- process Serial_Out_DFF
         if Clk'event and Clk = '1' then -- rising clock edge
             if Reset = '1' then         -- synchronous reset (active high)
-                TX <= '1';
+                TX     <= '1';
+				nRe_De <= '0';
             else 
-                TX <= (not(tx_Run) or serial_Data) and (not(tx_Start));
+                --TX <= (not(tx_Run) or serial_Data) and (not(tx_Start));
+				if       not(tx_start and tx_run and tx_nre_de) then TX     <= '1'; --idle
+				                                                     nRe_De <= '0'; --receive
+                
+				else if  tx_start and tx_run and not(tx_nre_de) then TX     <= '1'; --idle
+                                                                     nRe_De	<= '1'; --transmission
+																	 tx_nre_de <= '1';
+                
+				else if  tx_start and tx_run and tx_nre_de      then TX     <= '0'; --start Bit
+                                                                     nRe_De <= '1'; --transmission
+                
+				else if  not(tx_start) and tx_run and tx_nre_de then TX     <=  serial_Data; --send data bit	
+                                                                     nRe_De <= '1'; --transmission
+                
+				else if  not(tx_start and tx_run) and tx_nre_de then TX     <= '1'; --idle
+                                                                     nRe_De <= '0'; --receiving
+                                                                     tx_nre_de <= '0';
+                end if; 																	 
             end if;
         end if;
     end process SERIAL_OUT_DFF;
@@ -1605,7 +1625,8 @@ entity uartlite_core is
     -- UART signals
     RX           : in  std_logic;
     TX           : out std_logic;
-    Interrupt    : out std_logic
+    Interrupt    : out std_logic;
+	nRe_De       : out std_logic
    );
 end entity uartlite_core;
 
@@ -1932,7 +1953,8 @@ begin  -- architecture IMP
         Reset_TX_FIFO   => reset_TX_FIFO,
         TX_Data         => bus2ip_data(8-C_DATA_BITS to 7),
         TX_Buffer_Full  => tx_Buffer_Full,
-        TX_Buffer_Empty => tx_Buffer_Empty
+        TX_Buffer_Empty => tx_Buffer_Empty,
+		nRe_De          => nRe_De
        );
 
 end architecture RTL;
@@ -2083,6 +2105,7 @@ use axi_uartlite_v2_0_19.uartlite_core;
 --UARTLite Interface Signals
 --  rx                   --  Receive Data
 --  tx                   --  Transmit Data
+--  nre_de               --  Flow control for RS485
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 --                  Entity Section
@@ -2136,7 +2159,8 @@ entity axi_uartlite is
 
 -- UARTLite Interface Signals
       rx                    : in  std_logic;
-      tx                    : out std_logic
+      tx                    : out std_logic;
+	  nre_de                : out std_logic
    );
 
 -------------------------------------------------------------------------------
@@ -2250,6 +2274,7 @@ begin  -- architecture IMP
         SIn_DBus     => ip2bus_data(7 downto 0),
         RX           => rx,
         TX           => tx,
+		nRe_De       => nre_de,
         Interrupt    => Interrupt
        );
 

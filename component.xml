@@ -246,6 +246,14 @@
             <spirit:name>tx</spirit:name>
           </spirit:physicalPort>
         </spirit:portMap>
+		<spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>nRE_DE</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>nre_de</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
       </spirit:portMaps>
       <spirit:parameters>
         <spirit:parameter>
@@ -1059,6 +1067,19 @@ Writing a 1 to this bit position clears the receive FIFO
       </spirit:port>
       <spirit:port>
         <spirit:name>tx</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>std_logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_vhdlsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_vhdlbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+	  <spirit:port>
+        <spirit:name>nre_de</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:wireTypeDefs>
