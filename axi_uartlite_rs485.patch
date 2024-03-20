@@ -1,0 +1,246 @@
+--- axi_uartlite.vhd	Tue Apr 19 16:50:00 2016
++++ axi_uartlite.vhd	Mon Apr 18 18:12:33 2016
+@@ -114,6 +114,8 @@
+ --  C_USE_PARITY          -- Determines whether parity is used or not
+ --  C_ODD_PARITY          -- If parity is used determines whether parity
+ --                           is even or odd
++--  C_TXEN_DELAY          -- Determines the number of bit times to delay
++--                           the initial startbit after transmit enable
+ -------------------------------------------------------------------------------
+ -------------------------------------------------------------------------------
+ -- Definition of Ports :
+@@ -160,7 +162,8 @@
+     C_BAUDRATE            : integer                       := 9600;
+     C_DATA_BITS           : integer range 5 to 8          := 8;
+     C_USE_PARITY          : integer range 0 to 1          := 0;
+-    C_ODD_PARITY          : integer range 0 to 1          := 0
++    C_ODD_PARITY          : integer range 0 to 1          := 0;
++    C_TXEN_DELAY          : integer                       := 0
+    );
+   port
+    (
+@@ -196,7 +199,8 @@
+ 
+ -- UARTLite Interface Signals
+       rx                    : in  std_logic;
+-      tx                    : out std_logic
++      tx                    : out std_logic;
++      txen                  : out std_logic
+    );
+ 
+ -------------------------------------------------------------------------------
+@@ -294,7 +298,8 @@
+         C_BAUDRATE           => C_BAUDRATE,
+         C_DATA_BITS          => C_DATA_BITS,
+         C_USE_PARITY         => C_USE_PARITY,
+-        C_ODD_PARITY         => C_ODD_PARITY
++        C_ODD_PARITY         => C_ODD_PARITY,
++        C_TXEN_DELAY         => C_TXEN_DELAY
+        )
+       port map
+        (
+@@ -310,6 +315,7 @@
+         SIn_DBus     => ip2bus_data(7 downto 0),
+         RX           => rx,
+         TX           => tx,
++        TXEN         => txen,
+         Interrupt    => Interrupt
+        );
+ 
+--- uartlite_core.vhd	Tue Apr 19 16:50:00 2016
++++ uartlite_core.vhd	Mon Apr 18 17:49:50 2016
+@@ -101,6 +101,8 @@
+ --  C_USE_PARITY          -- Determines whether parity is used or not
+ --  C_ODD_PARITY          -- If parity is used determines whether parity
+ --                           is even or odd
++--  C_TXEN_DELAY          -- Determines the number of bit times to delay
++--                           the initial startbit after transmit enable
+ -- System generics
+ --  C_FAMILY              -- Xilinx FPGA Family
+ -------------------------------------------------------------------------------
+@@ -134,7 +136,8 @@
+     C_BAUDRATE          : integer              := 9600;
+     C_DATA_BITS         : integer range 5 to 8 := 8;
+     C_USE_PARITY        : integer range 0 to 1 := 0;
+-    C_ODD_PARITY        : integer range 0 to 1 := 0
++    C_ODD_PARITY        : integer range 0 to 1 := 0;
++    C_TXEN_DELAY        : integer              := 0
+    );
+   port
+    (
+@@ -152,6 +155,7 @@
+     -- UART signals
+     RX           : in  std_logic;
+     TX           : out std_logic;
++    TXEN         : out std_logic;
+     Interrupt    : out std_logic
+    );
+ end entity uartlite_core;
+@@ -467,7 +471,8 @@
+         C_FAMILY        => C_FAMILY,
+         C_DATA_BITS     => C_DATA_BITS,
+         C_USE_PARITY    => C_USE_PARITY,
+-        C_ODD_PARITY    => C_ODD_PARITY
++        C_ODD_PARITY    => C_ODD_PARITY,
++        C_TXEN_DELAY    => C_TXEN_DELAY
+        )
+       port map
+        (
+@@ -475,6 +480,7 @@
+         Reset           => Reset,
+         EN_16x_Baud     => en_16x_Baud,
+         TX              => TX,
++        TXEN            => TXEN,
+         Write_TX_FIFO   => bus2ip_wrce(1),
+         Reset_TX_FIFO   => reset_TX_FIFO,
+         TX_Data         => bus2ip_data(8-C_DATA_BITS to 7),
+--- uartlite_tx.vhd	Tue Apr 19 16:50:00 2016
++++ uartlite_tx.vhd	Tue Apr 19 17:04:04 2016
+@@ -101,6 +101,8 @@
+ --  C_USE_PARITY    -- Determines whether parity is used or not
+ --  C_ODD_PARITY    -- If parity is used determines whether parity
+ --                     is even or odd
++--  C_TXEN_DELAY    -- Determines the number of bit times to delay
++--                     the initial startbit after transmit enable
+ -- System generics
+ --  C_FAMILY        -- Xilinx FPGA Family
+ -------------------------------------------------------------------------------
+@@ -129,7 +131,8 @@
+     C_FAMILY        : string               := "virtex7";
+     C_DATA_BITS     : integer range 5 to 8 := 8;
+     C_USE_PARITY    : integer range 0 to 1 := 0;
+-    C_ODD_PARITY    : integer range 0 to 1 := 0
++    C_ODD_PARITY    : integer range 0 to 1 := 0;
++    C_TXEN_DELAY    : integer := 0
+    );
+   port
+    (
+@@ -137,6 +140,7 @@
+     Reset           : in  std_logic;
+     EN_16x_Baud     : in  std_logic;
+     TX              : out std_logic;
++    TXEN            : out std_logic;
+     Write_TX_FIFO   : in  std_logic;
+     Reset_TX_FIFO   : in  std_logic;
+     TX_Data         : in  std_logic_vector(0 to C_DATA_BITS-1);
+@@ -171,8 +175,11 @@
+     signal data_to_transfer  : std_logic_vector(0 to C_DATA_BITS-1);
+     signal div16             : std_logic;
+     signal tx_Data_Enable    : std_logic;
++    signal tx_Enable         : std_logic;
++    signal start_Enable      : std_logic;
+     signal tx_Start          : std_logic;
+     signal tx_DataBits       : std_logic;
++    signal tx_Stop           : std_logic;
+     signal tx_Run            : std_logic;
+     signal mux_sel           : std_logic_vector(0 to 2);
+     signal mux_sel_is_zero   : std_logic;
+@@ -192,6 +199,8 @@
+     signal fifo_rd           : std_logic;
+     signal tx_buffer_full_i  : std_logic;
+     signal TX_FIFO_Reset     : std_logic;
++    signal txen_delay        : integer range 0 to C_TXEN_DELAY := C_TXEN_DELAY;
++--    signal txen_delay_is_0   : boolean;
+ 
+ begin  -- architecture IMP
+ 
+@@ -247,7 +256,7 @@
+                 tx_Start <= '0';
+             else 
+                 tx_Start <= (not(tx_Run) and (tx_Start or 
+-                               (fifo_Data_Present and tx_Data_Enable)));
++                               (fifo_Data_Present and tx_Data_Enable and start_Enable)));
+             end if;
+         end if;
+     end process TX_START_DFF;
+@@ -267,6 +276,79 @@
+         end if;
+     end process TX_DATA_DFF;
+ 
++    ------------------------------------------------------------------------
++    -- TX_STOP_DFF : tx_stop is '1' for the stop bit in a transmission
++    ------------------------------------------------------------------------
++    TX_STOP_DFF : process (Clk) is
++    begin
++        if Clk'event and Clk = '1' then -- rising clock edge
++            if Reset = '1' then         -- synchronous reset (active high)
++                tx_Stop <= '0';
++            else 
++                tx_Stop <= (not(tx_Data_Enable) and (fifo_Read or tx_Stop));
++            end if;
++        end if;
++    end process TX_STOP_DFF;
++
++    ------------------------------------------------------------------------
++    -- TX_EN_DELAY : counter for delaying the first start bit
++    ------------------------------------------------------------------------
++    TX_EN_DELAY : process (Clk) is
++    begin
++        if Clk'event and Clk = '1' then -- rising clock edge
++            if Reset = '1' then         -- synchronous reset (active high)
++                txen_delay <= C_TXEN_DELAY;
++--                txen_delay_is_0 <= false;
++            else
++--                txen_delay_is_0 <= (txen_delay = 0);
++                if tx_Enable = '0' then
++                    txen_delay <= C_TXEN_DELAY;
++--                elsif (tx_Data_Enable = '1') and not txen_delay_is_0 then
++                elsif (tx_Data_Enable = '1') and (start_Enable = '0') then
++                    txen_delay <= txen_delay - 1;
++                end if;
++            end if;
++        end if;
++    end process TX_EN_DELAY;
++
++    ------------------------------------------------------------------------
++    -- START_EN_DFF : start_Enable is '1' after C_TXEN_DELAY bits and until
++    --                the end of a transmission
++    ------------------------------------------------------------------------
++    START_EN_DFF : process (Clk) is
++    begin
++        if Clk'event and Clk = '1' then -- rising clock edge
++            if Reset = '1' then         -- synchronous reset (active high)
++                start_Enable <= '0';
++            elsif txen_delay = 0 then
++                start_Enable <= '1';
++            else
++                start_Enable <= '0';
++            end if;
++        end if;
++    end process START_EN_DFF;
++
++    ------------------------------------------------------------------------
++    -- TX_EN_DFF : tx_Enable is '1' from TXEN_DELAY bits before upto the
++    --             end of a transmission
++    ------------------------------------------------------------------------
++    TX_EN_DFF : process (Clk) is
++    begin
++        if Clk'event and Clk = '1' then -- rising clock edge
++            if Reset = '1' then         -- synchronous reset (active high)
++                tx_Enable <= '0';
++--                start_Enable <= '0';
++--            elsif txen_delay_is_0 then
++            elsif start_Enable = '1' then
++                tx_Enable <= (tx_Start or tx_DataBits or tx_Stop or fifo_Data_Present);
++--                start_Enable <= '1';
++            else
++                tx_Enable <= fifo_Data_Present;
++--                start_Enable <= '0';
++            end if;
++        end if;
++    end process TX_EN_DFF;
++
+     -------------------------------------------------------------------------
+     -- COUNTER : If mux_sel is zero then reload with the init value else if 
+     --           tx_DataBits = '1', decrement
+@@ -389,8 +471,10 @@
+         if Clk'event and Clk = '1' then -- rising clock edge
+             if Reset = '1' then         -- synchronous reset (active high)
+                 TX <= '1';
++                TXEN <= '0';
+             else 
+                 TX <= (not(tx_Run) or serial_Data) and (not(tx_Start));
++                TXEN <= tx_Enable;
+             end if;
+         end if;
+     end process SERIAL_OUT_DFF;
