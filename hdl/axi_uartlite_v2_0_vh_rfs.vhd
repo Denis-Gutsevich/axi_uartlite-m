@@ -638,39 +638,53 @@ begin  -- architecture IMP
         end if;
     end process SERIAL_DATA_DFF;
 
-    --------------------------------------------------------------------------
-    -- SERIAL_OUT_DFF :Force a '0' when tx_start is '1', Start_bit
-    --                 Force a '1' when tx_run is '0',   Idle
-    --                 otherwise put out the serial_data
-    --------------------------------------------------------------------------
-    SERIAL_OUT_DFF : process (Clk) is
-    begin  -- process Serial_Out_DFF
-        if Clk'event and Clk = '1' then -- rising clock edge
-            if Reset = '1' then         -- synchronous reset (active high)
-                TX     <= '1';
+	--------------------------------------------------------------------------
+	-- SERIAL_OUT_DFF: Force a '0' when tx_start is '1', Start_bit
+	--                Force a '1' when tx_run is '0', Idle
+	--                Otherwise, put out the serial_data
+	--------------------------------------------------------------------------
+	SERIAL_OUT_DFF : process (Clk) is
+	begin  -- process Serial_Out_DFF
+		if rising_edge(Clk) then -- rising clock edge
+			if Reset = '1' then   -- synchronous reset (active high)
+				TX     <= '1';
 				nRe_De <= '0';
-            else 
-                --TX <= (not(tx_Run) or serial_Data) and (not(tx_Start));
-				if       not(tx_start and tx_run and tx_nre_de) then TX     <= '1'; --idle
-				                                                     nRe_De <= '0'; --receive
-                
-				else if  tx_start and tx_run and not(tx_nre_de) then TX     <= '1'; --idle
-                                                                     nRe_De	<= '1'; --transmission
-																	 tx_nre_de <= '1';
-                
-				else if  tx_start and tx_run and tx_nre_de      then TX     <= '0'; --start Bit
-                                                                     nRe_De <= '1'; --transmission
-                
-				else if  not(tx_start) and tx_run and tx_nre_de then TX     <=  serial_Data; --send data bit	
-                                                                     nRe_De <= '1'; --transmission
-                
-				else if  not(tx_start and tx_run) and tx_nre_de then TX     <= '1'; --idle
-                                                                     nRe_De <= '0'; --receiving
-                                                                     tx_nre_de <= '0';
-                end if; 																	 
-            end if;
-        end if;
-    end process SERIAL_OUT_DFF;
+			else 
+			    TX <= (not(tx_Run) or serial_Data) and (not(tx_Start));
+				
+				if tx_start = '0' and tx_run = '0' and tx_nre_de = '0' then
+					
+					TX        <= '1'; -- idle
+					nRe_De    <= '0'; -- receive
+					tx_nre_de <= '0';
+				
+				elsif tx_start = '1' and tx_nre_de = '0' then
+					
+					TX        <= '1'; -- idle
+					nRe_De    <= '1'; -- transmission
+					tx_nre_de <= '1';
+				
+				elsif tx_start = '1' and tx_nre_de = '0' then
+					
+					TX        <= '0'; -- start Bit
+					nRe_De    <= '1'; -- transmission
+					tx_nre_de <= '1';
+				
+				elsif tx_start = '0' and tx_run = '1' and tx_nre_de = '1' then
+					
+					TX        <= serial_Data; -- send data bit	
+					nRe_De    <= '1'; -- transmissionv
+					tx_nre_de <= '1';
+				
+				elsif tx_start = '0' and tx_run = '0' and tx_nre_de = '1' then
+					
+					TX        <= '1'; -- idle
+					nRe_De    <= '0'; -- receiving
+					tx_nre_de <= '0';
+				end if; 																	 
+			end if;
+		end if;
+	end process SERIAL_OUT_DFF;
 
     --------------------------------------------------------------------------
     -- USING_PARITY : Generate parity handling when C_USE_PARITY = 1
