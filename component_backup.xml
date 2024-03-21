@@ -246,6 +246,14 @@
             <spirit:name>tx</spirit:name>
           </spirit:physicalPort>
         </spirit:portMap>
+		<spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TxEn</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>txen</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
       </spirit:portMaps>
       <spirit:parameters>
         <spirit:parameter>
@@ -1070,6 +1078,19 @@ Writing a 1 to this bit position clears the receive FIFO
           </spirit:wireTypeDefs>
         </spirit:wire>
       </spirit:port>
+	  <spirit:port>
+        <spirit:name>txen</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>std_logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_vhdlsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_vhdlbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
     </spirit:ports>
     <spirit:modelParameters>
       <spirit:modelParameter xsi:type="spirit:nameValueTypeType" spirit:dataType="string">
@@ -1100,6 +1121,11 @@ Writing a 1 to this bit position clears the receive FIFO
         <spirit:name>C_DATA_BITS</spirit:name>
         <spirit:displayName>Data Bits</spirit:displayName>
         <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_DATA_BITS" spirit:minimum="5" spirit:maximum="8" spirit:rangeType="long">8</spirit:value>
+      </spirit:modelParameter>
+      <spirit:modelParameter spirit:dataType="integer">
+	  <spirit:name>C_TXEN_DELAY</spirit:name>
+        <spirit:displayName>TXEN Delay</spirit:displayName>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_TXEN_DELAY" spirit:minimum="0" spirit:rangeType="long">0</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_USE_PARITY</spirit:name>
@@ -1390,6 +1416,12 @@ Writing a 1 to this bit position clears the receive FIFO
   </spirit:fileSets>
   <spirit:description>Generic UART (Universal Asynchronous Receiver/Transmitter) for AXI Interface</spirit:description>
   <spirit:parameters>
+    <spirit:parameter>
+	  <spirit:name>C_TXEN_DELAY</spirit:name>
+      <spirit:displayName>TXEN Delay</spirit:displayName>
+      <spirit:description>The number of bit times to delay the initial startbit after transmit enable.</spirit:description>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.C_TXEN_DELAY" spirit:order="1500" spirit:minimum="0" spirit:rangeType="long">0</spirit:value>
+    </spirit:parameter>
     <spirit:parameter>
       <spirit:name>C_DATA_BITS</spirit:name>
       <spirit:displayName>Data Bits</spirit:displayName>

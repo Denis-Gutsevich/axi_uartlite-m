@@ -13,6 +13,8 @@ proc init_gui { IPINST } {
 	set C_BAUDRATE [ipgui::add_param $IPINST -parent $panel1 -name C_BAUDRATE -widget comboBox]
 	ipgui::add_row $IPINST -parent $panel1 	
 	set C_DATA_BITS [ipgui::add_param $IPINST -parent $panel1 -name C_DATA_BITS ]
+	ipgui::add_row $IPINST -parent $panel1 	
+	set C_TXEN_DELAY [ipgui::add_param $IPINST -parent $panel1 -name C_TXEN_DELAY ]
 	set PARITY [ipgui::add_param $IPINST -parent $Page0 -name PARITY -widget radioGroup -layout horizontal]
 
 	set C_USE_PARITY [ipgui::add_param $IPINST -name C_USE_PARITY]
@@ -29,6 +31,7 @@ proc init_gui { IPINST } {
 	set_property tooltip "Baud rate of the AXI UART Lite in bits per second." $C_BAUDRATE
 	set_property display_name "Data Bits" $C_DATA_BITS
 	set_property tooltip "The number of data bits in the serial frame." $C_DATA_BITS
+	set_property tooltip "The number of bit times to delay the initial startbit after transmit enable." $C_TXEN_DELAY
 	set_property tooltip "Determines whether parity is used or not. If used whether parity is odd or even." $PARITY
 
 }
