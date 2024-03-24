@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <spirit:component xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <spirit:vendor>xilinx.com</spirit:vendor>
-  <spirit:library>ip</spirit:library>
-  <spirit:name>axi_uartlite</spirit:name>
-  <spirit:version>2.0</spirit:version>
+  <spirit:library>user</spirit:library>
+  <spirit:name>axi_uartlite_m</spirit:name>
+  <spirit:version>1.0</spirit:version>
   <spirit:busInterfaces>
     <spirit:busInterface>
       <spirit:name>S_AXI</spirit:name>
@@ -246,7 +246,7 @@
             <spirit:name>tx</spirit:name>
           </spirit:physicalPort>
         </spirit:portMap>
-		<spirit:portMap>
+        <spirit:portMap>
           <spirit:logicalPort>
             <spirit:name>TxEn</spirit:name>
           </spirit:logicalPort>
@@ -301,7 +301,7 @@
             <spirit:description>UART Receive Data
 </spirit:description>
             <spirit:bitOffset>0</spirit:bitOffset>
-            <spirit:bitWidth spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_DATA_BITS&apos;)))">8</spirit:bitWidth>
+            <spirit:bitWidth spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_DATA_BITS&apos;)))">8</spirit:bitWidth>
             <spirit:volatile>true</spirit:volatile>
             <spirit:access>read-only</spirit:access>
             <spirit:writeValueConstraint>
@@ -328,7 +328,7 @@
             <spirit:description>UART Transmit Data
 </spirit:description>
             <spirit:bitOffset>0</spirit:bitOffset>
-            <spirit:bitWidth spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_DATA_BITS&apos;)))">8</spirit:bitWidth>
+            <spirit:bitWidth spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_DATA_BITS&apos;)))">8</spirit:bitWidth>
             <spirit:volatile>true</spirit:volatile>
             <spirit:access>write-only</spirit:access>
             <spirit:writeValueConstraint>
@@ -358,7 +358,7 @@ Writing a 1 to this bit position clears the transmit FIFO
   1 - Clear the transmit FIFO
 </spirit:description>
             <spirit:bitOffset>0</spirit:bitOffset>
-            <spirit:bitWidth>1</spirit:bitWidth>
+            <spirit:bitWidth spirit:format="long">1</spirit:bitWidth>
             <spirit:volatile>true</spirit:volatile>
             <spirit:access>write-only</spirit:access>
             <spirit:writeValueConstraint>
@@ -376,7 +376,7 @@ Writing a 1 to this bit position clears the receive FIFO
   1 - Clear the receive FIFO
 </spirit:description>
             <spirit:bitOffset>1</spirit:bitOffset>
-            <spirit:bitWidth>1</spirit:bitWidth>
+            <spirit:bitWidth spirit:format="long">1</spirit:bitWidth>
             <spirit:volatile>true</spirit:volatile>
             <spirit:access>write-only</spirit:access>
             <spirit:writeValueConstraint>
@@ -393,7 +393,7 @@ Writing a 1 to this bit position clears the receive FIFO
   1 - Enable interrupt signal
 </spirit:description>
             <spirit:bitOffset>4</spirit:bitOffset>
-            <spirit:bitWidth>1</spirit:bitWidth>
+            <spirit:bitWidth spirit:format="long">1</spirit:bitWidth>
             <spirit:volatile>true</spirit:volatile>
             <spirit:access>write-only</spirit:access>
             <spirit:writeValueConstraint>
@@ -422,7 +422,7 @@ Writing a 1 to this bit position clears the receive FIFO
   1 - Receive FIFO has data
 </spirit:description>
             <spirit:bitOffset>0</spirit:bitOffset>
-            <spirit:bitWidth>1</spirit:bitWidth>
+            <spirit:bitWidth spirit:format="long">1</spirit:bitWidth>
             <spirit:volatile>true</spirit:volatile>
             <spirit:access>read-only</spirit:access>
             <spirit:writeValueConstraint>
@@ -439,7 +439,7 @@ Writing a 1 to this bit position clears the receive FIFO
   1 - Receive FIFO is full
 </spirit:description>
             <spirit:bitOffset>1</spirit:bitOffset>
-            <spirit:bitWidth>1</spirit:bitWidth>
+            <spirit:bitWidth spirit:format="long">1</spirit:bitWidth>
             <spirit:volatile>true</spirit:volatile>
             <spirit:access>read-only</spirit:access>
             <spirit:writeValueConstraint>
@@ -456,7 +456,7 @@ Writing a 1 to this bit position clears the receive FIFO
   1 - Transmit FIFO is empty
 </spirit:description>
             <spirit:bitOffset>2</spirit:bitOffset>
-            <spirit:bitWidth>1</spirit:bitWidth>
+            <spirit:bitWidth spirit:format="long">1</spirit:bitWidth>
             <spirit:volatile>true</spirit:volatile>
             <spirit:access>read-only</spirit:access>
             <spirit:writeValueConstraint>
@@ -473,7 +473,7 @@ Writing a 1 to this bit position clears the receive FIFO
   1 - Transmit FIFO is full
 </spirit:description>
             <spirit:bitOffset>3</spirit:bitOffset>
-            <spirit:bitWidth>1</spirit:bitWidth>
+            <spirit:bitWidth spirit:format="long">1</spirit:bitWidth>
             <spirit:volatile>true</spirit:volatile>
             <spirit:access>read-only</spirit:access>
             <spirit:writeValueConstraint>
@@ -490,7 +490,7 @@ Writing a 1 to this bit position clears the receive FIFO
   1 - Interrupt is enabled
 </spirit:description>
             <spirit:bitOffset>4</spirit:bitOffset>
-            <spirit:bitWidth>1</spirit:bitWidth>
+            <spirit:bitWidth spirit:format="long">1</spirit:bitWidth>
             <spirit:volatile>true</spirit:volatile>
             <spirit:access>read-only</spirit:access>
             <spirit:writeValueConstraint>
@@ -505,7 +505,7 @@ Writing a 1 to this bit position clears the receive FIFO
             <spirit:description>Indicates that a overrun error has occurred after the last time the status register was read. Overrun is when a new character has been received but the receive FIFO is full. The received character is ignored and not written into the receive FIFO. This bit is cleared when the status register is read.      0 - No overrun error has occurred      1 - Overrun error has occurred
 </spirit:description>
             <spirit:bitOffset>5</spirit:bitOffset>
-            <spirit:bitWidth>1</spirit:bitWidth>
+            <spirit:bitWidth spirit:format="long">1</spirit:bitWidth>
             <spirit:volatile>true</spirit:volatile>
             <spirit:access>read-only</spirit:access>
             <spirit:writeValueConstraint>
@@ -520,7 +520,7 @@ Writing a 1 to this bit position clears the receive FIFO
             <spirit:description>Indicates that a frame error has occurred after the last time the status register was read. Frame error is defined as detection of a stop bit with the value 0. The receive character is ignored and not written to the receive FIFO. This bit is cleared when the status register is read.      0 - No frame error has occurred   1 - Frame error has occurred
 </spirit:description>
             <spirit:bitOffset>6</spirit:bitOffset>
-            <spirit:bitWidth>1</spirit:bitWidth>
+            <spirit:bitWidth spirit:format="long">1</spirit:bitWidth>
             <spirit:volatile>true</spirit:volatile>
             <spirit:access>read-only</spirit:access>
             <spirit:writeValueConstraint>
@@ -535,7 +535,7 @@ Writing a 1 to this bit position clears the receive FIFO
             <spirit:description>Indicates that a parity error has occurred after the last time the status register was read. If the UART is configured without any parity handling, this bit is always 0. The received character is written into the receive FIFO. This bit is cleared when the status register is read.      0 - No parity error has occurred      1 - Parity error has occurred
 </spirit:description>
             <spirit:bitOffset>7</spirit:bitOffset>
-            <spirit:bitWidth>1</spirit:bitWidth>
+            <spirit:bitWidth spirit:format="long">1</spirit:bitWidth>
             <spirit:volatile>true</spirit:volatile>
             <spirit:access>read-only</spirit:access>
             <spirit:writeValueConstraint>
@@ -560,7 +560,7 @@ Writing a 1 to this bit position clears the receive FIFO
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>47cf5fd1</spirit:value>
+            <spirit:value>2b73bc87</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -580,7 +580,7 @@ Writing a 1 to this bit position clears the receive FIFO
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>e7a8868a</spirit:value>
+            <spirit:value>f7a32162</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -594,7 +594,7 @@ Writing a 1 to this bit position clears the receive FIFO
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>01bf90b6</spirit:value>
+            <spirit:value>6b2a6a57</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -608,7 +608,7 @@ Writing a 1 to this bit position clears the receive FIFO
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>0c85871a</spirit:value>
+            <spirit:value>a4f9e844</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -622,7 +622,7 @@ Writing a 1 to this bit position clears the receive FIFO
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>b94bcb10</spirit:value>
+            <spirit:value>034878f0</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -636,7 +636,7 @@ Writing a 1 to this bit position clears the receive FIFO
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>2e93685f</spirit:value>
+            <spirit:value>f9cf430c</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -658,7 +658,7 @@ Writing a 1 to this bit position clears the receive FIFO
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>1b20cd12</spirit:value>
+            <spirit:value>6b52d292</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -694,7 +694,7 @@ Writing a 1 to this bit position clears the receive FIFO
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>6ae4c41a</spirit:value>
+            <spirit:value>b3528a8a</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -722,7 +722,7 @@ Writing a 1 to this bit position clears the receive FIFO
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>768de5cf</spirit:value>
+            <spirit:value>2bccf03f</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1078,7 +1078,7 @@ Writing a 1 to this bit position clears the receive FIFO
           </spirit:wireTypeDefs>
         </spirit:wire>
       </spirit:port>
-	  <spirit:port>
+      <spirit:port>
         <spirit:name>txen</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
@@ -1123,7 +1123,7 @@ Writing a 1 to this bit position clears the receive FIFO
         <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_DATA_BITS" spirit:minimum="5" spirit:maximum="8" spirit:rangeType="long">8</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
-	  <spirit:name>C_TXEN_DELAY</spirit:name>
+        <spirit:name>C_TXEN_DELAY</spirit:name>
         <spirit:displayName>TXEN Delay</spirit:displayName>
         <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_TXEN_DELAY" spirit:minimum="0" spirit:rangeType="long">0</spirit:value>
       </spirit:modelParameter>
@@ -1141,7 +1141,17 @@ Writing a 1 to this bit position clears the receive FIFO
   </spirit:model>
   <spirit:choices>
     <spirit:choice>
-      <spirit:name>choice_list_44379a9c</spirit:name>
+      <spirit:name>choice_list_3bbfa9f1</spirit:name>
+      <spirit:enumeration>No_Parity</spirit:enumeration>
+      <spirit:enumeration>Odd</spirit:enumeration>
+      <spirit:enumeration>Even</spirit:enumeration>
+    </spirit:choice>
+    <spirit:choice>
+      <spirit:name>choice_list_ac75ef1e</spirit:name>
+      <spirit:enumeration>Custom</spirit:enumeration>
+    </spirit:choice>
+    <spirit:choice>
+      <spirit:name>choice_list_f585525a</spirit:name>
       <spirit:enumeration>110</spirit:enumeration>
       <spirit:enumeration>300</spirit:enumeration>
       <spirit:enumeration>1200</spirit:enumeration>
@@ -1156,16 +1166,6 @@ Writing a 1 to this bit position clears the receive FIFO
       <spirit:enumeration>230400</spirit:enumeration>
       <spirit:enumeration>460800</spirit:enumeration>
       <spirit:enumeration>921600</spirit:enumeration>
-    </spirit:choice>
-    <spirit:choice>
-      <spirit:name>choice_list_a470cc21</spirit:name>
-      <spirit:enumeration>No_Parity</spirit:enumeration>
-      <spirit:enumeration>Odd</spirit:enumeration>
-      <spirit:enumeration>Even</spirit:enumeration>
-    </spirit:choice>
-    <spirit:choice>
-      <spirit:name>choice_list_d295976c</spirit:name>
-      <spirit:enumeration>Custom</spirit:enumeration>
     </spirit:choice>
   </spirit:choices>
   <spirit:fileSets>
@@ -1369,7 +1369,7 @@ Writing a 1 to this bit position clears the receive FIFO
       <spirit:file>
         <spirit:name>hdl/axi_uartlite_v2_0_vh_rfs.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_6ae4c41a</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_b3528a8a</spirit:userFileType>
         <spirit:logicalName>axi_uartlite_v2_0_19</spirit:logicalName>
       </spirit:file>
     </spirit:fileSet>
@@ -1414,10 +1414,10 @@ Writing a 1 to this bit position clears the receive FIFO
       </spirit:vendorExtensions>
     </spirit:fileSet>
   </spirit:fileSets>
-  <spirit:description>Generic UART (Universal Asynchronous Receiver/Transmitter) for AXI Interface</spirit:description>
+  <spirit:description>Generic UART (Universal Asynchronous Receiver/Transmitter) with flow control for AXI Interface</spirit:description>
   <spirit:parameters>
     <spirit:parameter>
-	  <spirit:name>C_TXEN_DELAY</spirit:name>
+      <spirit:name>C_TXEN_DELAY</spirit:name>
       <spirit:displayName>TXEN Delay</spirit:displayName>
       <spirit:description>The number of bit times to delay the initial startbit after transmit enable.</spirit:description>
       <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.C_TXEN_DELAY" spirit:order="1500" spirit:minimum="0" spirit:rangeType="long">0</spirit:value>
@@ -1432,7 +1432,7 @@ Writing a 1 to this bit position clears the receive FIFO
       <spirit:name>C_BAUDRATE</spirit:name>
       <spirit:displayName>Baudrate</spirit:displayName>
       <spirit:description>Baud rate of the AXI UART Lite in bits per second.</spirit:description>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.C_BAUDRATE" spirit:choiceRef="choice_list_44379a9c" spirit:order="1300">9600</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.C_BAUDRATE" spirit:choiceRef="choice_list_f585525a" spirit:order="1300">9600</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>C_S_AXI_ACLK_FREQ_HZ</spirit:name>
@@ -1448,12 +1448,12 @@ Writing a 1 to this bit position clears the receive FIFO
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Component_Name</spirit:name>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Component_Name" spirit:order="1">axi_uartlite_v2_0</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Component_Name" spirit:order="1">axi_uartlite_m_v1_0</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>PARITY</spirit:name>
       <spirit:displayName>Parity</spirit:displayName>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.PARITY" spirit:choiceRef="choice_list_a470cc21" spirit:order="1100">No_Parity</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.PARITY" spirit:choiceRef="choice_list_3bbfa9f1" spirit:order="1100">No_Parity</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>C_USE_PARITY</spirit:name>
@@ -1472,7 +1472,7 @@ Writing a 1 to this bit position clears the receive FIFO
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>UARTLITE_BOARD_INTERFACE</spirit:name>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.UARTLITE_BOARD_INTERFACE" spirit:choiceRef="choice_list_d295976c" spirit:order="1104">Custom</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.UARTLITE_BOARD_INTERFACE" spirit:choiceRef="choice_list_ac75ef1e" spirit:order="1104">Custom</spirit:value>
     </spirit:parameter>
   </spirit:parameters>
   <spirit:vendorExtensions>
@@ -1480,23 +1480,29 @@ Writing a 1 to this bit position clears the receive FIFO
       <xilinx:taxonomies>
         <xilinx:taxonomy>/Embedded_Processing/AXI_Peripheral/Low_Speed_Peripheral</xilinx:taxonomy>
       </xilinx:taxonomies>
-      <xilinx:displayName>AXI Uartlite</xilinx:displayName>
+      <xilinx:displayName>AXI Uartlite with tx_enable</xilinx:displayName>
       <xilinx:autoFamilySupportLevel>level_2</xilinx:autoFamilySupportLevel>
-      <xilinx:vendorURL>http://www.xilinx.com</xilinx:vendorURL>
-      <xilinx:coreRevision>19</xilinx:coreRevision>
+      <xilinx:vendorURL>https://github.com/Denis-Gutsevich/axi_uartlite.git</xilinx:vendorURL>
+      <xilinx:coreRevision>20</xilinx:coreRevision>
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:ip:axi_uartlite:1.02.a</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2017-12-16T04:46:03Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2024-03-24T14:58:53Z</xilinx:coreCreationDateTime>
+      <xilinx:tags>
+        <xilinx:tag xilinx:name="xilinx.com:ip:axi_uartlite:2.0_ARCHIVE_LOCATION">z:/Denis/axi_uartlite</xilinx:tag>
+        <xilinx:tag xilinx:name="xilinx.com:user:axi_uartlite:2.0_ARCHIVE_LOCATION">z:/Denis/axi_uartlite</xilinx:tag>
+        <xilinx:tag xilinx:name="xilinx.com:user:axi_uartlite_m:2.0_ARCHIVE_LOCATION">z:/Denis/axi_uartlite</xilinx:tag>
+        <xilinx:tag xilinx:name="xilinx.com:user:axi_uartlite_m:1.0_ARCHIVE_LOCATION">z:/Denis/axi_uartlite</xilinx:tag>
+      </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2017.4</xilinx:xilinxVersion>
-      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="205d9700"/>
-      <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="00000000"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="372f193c"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="ca2ad2a5"/>
-      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="066283f2"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="27618e8b"/>
+      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="4fd15b0e"/>
+      <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="4df03bef"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="45c5fb1a"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="a33afa73"/>
+      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="72ff2f3e"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="f1e55b1a"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>
