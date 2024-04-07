@@ -10,7 +10,7 @@ proc init_gui { IPINST } {
 	set C_S_AXI_ACLK_FREQ_HZ_d [ipgui::add_param $IPINST -parent $panel1 -widget textEdit -name C_S_AXI_ACLK_FREQ_HZ_d]
 	ipgui::add_static_text  $IPINST -name ST1 -parent  $panel1 -text "[10-300]MHz" 
 	ipgui::add_row $IPINST -parent $panel1 	
-	set C_BAUDRATE [ipgui::add_param $IPINST -parent $panel1 -name C_BAUDRATE -widget comboBox]
+	#set C_BAUDRATE [ipgui::add_param $IPINST -parent $panel1 -name C_BAUDRATE -widget comboBox]
 	ipgui::add_row $IPINST -parent $panel1 	
 	set C_DATA_BITS [ipgui::add_param $IPINST -parent $panel1 -name C_DATA_BITS ]
 	ipgui::add_row $IPINST -parent $panel1 	
@@ -24,11 +24,11 @@ proc init_gui { IPINST } {
 	set C_S_AXI_ACLK_FREQ_HZ [ipgui::add_param $IPINST -name C_S_AXI_ACLK_FREQ_HZ]
 	set_property visible false $C_S_AXI_ACLK_FREQ_HZ
 
-	set_property display_name "Baud Rate" $C_BAUDRATE
+	#set_property display_name "Baud Rate" $C_BAUDRATE
 	set_property display_name "AXI CLK Frequency" $C_S_AXI_ACLK_FREQ_HZ_d
 	set_property tooltip "AXI4-Lite clock frequency range should be in between 10 to 300MHz." $C_S_AXI_ACLK_FREQ_HZ_d
 	set_property tooltip "AXI4-Lite clock frequency range should be in between 10 to 300MHz." $C_S_AXI_ACLK_FREQ_HZ
-	set_property tooltip "Baud rate of the AXI UART Lite in bits per second." $C_BAUDRATE
+	#set_property tooltip "Baud rate of the AXI UART Lite in bits per second." $C_BAUDRATE
 	set_property display_name "Data Bits" $C_DATA_BITS
 	set_property tooltip "The number of data bits in the serial frame." $C_DATA_BITS
 	set_property tooltip "The number of bit times to delay the initial startbit after transmit enable." $C_TXEN_DELAY

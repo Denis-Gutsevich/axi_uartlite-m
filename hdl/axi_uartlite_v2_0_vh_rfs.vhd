@@ -1483,16 +1483,17 @@ use IEEE.std_logic_1164.all;
 -------------------------------------------------------------------------------
 
 entity baudrate is
-    generic
-      (
-      C_RATIO      : integer := 48  -- The ratio between clk and the asked
-                                   -- baudrate multiplied with 16
-      );                              
+    --generic
+    --  (
+    --  C_RATIO      : integer := 48  -- The ratio between clk and the asked
+    --                               -- baudrate multiplied with 16
+    --  );                              
     port
       (
       Clk          : in  std_logic;
       Reset        : in  std_logic;
-      EN_16x_Baud  : out std_logic
+      EN_16x_Baud  : out std_logic;
+	  C_RATIO      : in  integer
       );
 end entity baudrate;
 
@@ -1507,7 +1508,7 @@ attribute DowngradeIPIdentifiedWarnings of RTL : architecture is "yes";
     ---------------------------------------------------------------------------
     -- Signal Declarations
     ---------------------------------------------------------------------------
-    signal count : natural range 0 to C_RATIO-1;
+    signal count : natural range 0 to 1000000;
 
 begin  -- architecture VHDL_RTL
 
@@ -1522,7 +1523,7 @@ begin  -- architecture VHDL_RTL
                     EN_16x_Baud <= '0';
                 else
                     if (count = 0) then
-                        count       <= C_RATIO-1;
+                        count       <= C_RATIO - 1;
                         EN_16x_Baud <= '1';
                     else
                         count       <= count - 1;
@@ -1732,7 +1733,9 @@ attribute DowngradeIPIdentifiedWarnings of RTL : architecture is "yes";
     -- Constant declarations
     ---------------------------------------------------------------------------
 
-    constant RATIO : integer := CALC_RATIO( C_S_AXI_ACLK_FREQ_HZ, C_BAUDRATE);
+    --constant RATIO : integer := CALC_RATIO( C_S_AXI_ACLK_FREQ_HZ, C_BAUDRATE);
+    --constant RATIO : integer := 19200;
+	signal RATIO : integer;
 
     ---------------------------------------------------------------------------
     -- Signal declarations
@@ -1752,12 +1755,12 @@ attribute DowngradeIPIdentifiedWarnings of RTL : architecture is "yes";
     -- Write Only
     -- Below mentioned bits belong to Control Register and are declared as
     -- signals below
-    -- bit 0-2 Dont'Care
+    -- bit 0-2 baud_sel_low
     -- bit 3   enable_interrupts
-    -- bit 4-5 Dont'Care
+    -- bit 4-5 baud_sel_high
     -- bit 6   Reset_RX_FIFO
     -- bit 7   Reset_TX_FIFO
-
+	
     signal en_16x_Baud         : std_logic;
     signal enable_interrupts   : std_logic;
     signal reset_RX_FIFO       : std_logic;
@@ -1773,8 +1776,10 @@ attribute DowngradeIPIdentifiedWarnings of RTL : architecture is "yes";
     signal tx_Buffer_Empty     : std_logic;
     signal tx_Buffer_Empty_Pre : std_logic;
     signal rx_Data_Present_Pre : std_logic;
+	signal baud_sel            : std_logic_vector(0 to 4) := "01001";
 
 begin  -- architecture IMP
+
 
     ---------------------------------------------------------------------------
     -- Generating the acknowledgement and error signals
@@ -1792,25 +1797,57 @@ begin  -- architecture IMP
     -- BAUD_RATE_I : Instansiating the baudrate module
     -------------------------------------------------------------------------
     BAUD_RATE_I : entity axi_uartlite_v2_0_19.baudrate
-        generic map
-         (
-          C_RATIO      => RATIO
-         )
+        --generic map
+        -- (
+        --  C_RATIO      => RATIO
+        -- )
         port map
          (
           Clk          => Clk,
           Reset        => Reset,
-          EN_16x_Baud  => en_16x_Baud
+          EN_16x_Baud  => en_16x_Baud,
+		  C_RATIO      => RATIO
          );
 
     -------------------------------------------------------------------------
     -- Status register handling
     -------------------------------------------------------------------------
-    status_reg(7) <= rx_Data_Present;
+	
+	status_reg(7) <= rx_Data_Present;
     status_reg(6) <= rx_Buffer_Full;
     status_reg(5) <= tx_Buffer_Empty;
     status_reg(4) <= tx_Buffer_Full;
     status_reg(3) <= enable_interrupts;
+	
+	---------------------------------------------------------------------------
+	-- RATIO_U : Updating RATIO
+	---------------------------------------------------------------------------
+
+	RATIO_U : process (baud_sel) is
+    variable baud : integer := 115200;
+	begin
+	if Clk'event and Clk = '1' then
+		case baud_sel is
+			when "00000" => baud := 110;       --0
+			when "00001" => baud := 300;       --1
+			when "00010" => baud := 1200;      --2
+			when "00011" => baud := 2400;      --3
+			when "00100" => baud := 4800;      --4
+			when "00101" => baud := 9600;      --5
+			when "00110" => baud := 19200;     --6
+			when "00111" => baud := 38400;     --7
+			when "01000" => baud := 57600;     --8
+			when "01001" => baud := 115200;    --9
+			when "01010" => baud := 128000;    --A
+			when "01011" => baud := 230400;    --B
+			when "01100" => baud := 460800;    --C
+			when "01101" => baud := 921600;    --D
+			when others =>  baud := 115200;
+		end case;
+    end if;
+    RATIO <= CALC_RATIO(C_S_AXI_ACLK_FREQ_HZ, baud);
+	--RATIO <= baud;
+	end process RATIO_U;
 
     -------------------------------------------------------------------------
     -- CLEAR_STATUS_REG : Process to clear status register
@@ -1899,6 +1936,8 @@ begin  -- architecture IMP
                 reset_RX_FIFO     <= bus2ip_data(6);
                 reset_TX_FIFO     <= bus2ip_data(7);
                 enable_interrupts <= bus2ip_data(3);
+				baud_sel(0 to 2)  <= bus2ip_data(0 to 2);
+				baud_sel(3 to 4)  <= bus2ip_data(4 to 5);
             else
                 reset_TX_FIFO <= '0';
                 reset_RX_FIFO <= '0';
