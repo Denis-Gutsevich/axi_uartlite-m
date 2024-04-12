@@ -778,7 +778,7 @@ Writing a 1 to this bit position clears the receive FIFO
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long">3</spirit:left>
+            <spirit:left spirit:format="long">4</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -942,7 +942,7 @@ Writing a 1 to this bit position clears the receive FIFO
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long">3</spirit:left>
+            <spirit:left spirit:format="long">4</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1105,7 +1105,7 @@ Writing a 1 to this bit position clears the receive FIFO
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_S_AXI_ADDR_WIDTH</spirit:name>
         <spirit:displayName>C S Axi Addr Width</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:id="MODELPARAM_VALUE.C_S_AXI_ADDR_WIDTH">4</spirit:value>
+        <spirit:value spirit:format="long" spirit:id="MODELPARAM_VALUE.C_S_AXI_ADDR_WIDTH">5</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_S_AXI_DATA_WIDTH</spirit:name>

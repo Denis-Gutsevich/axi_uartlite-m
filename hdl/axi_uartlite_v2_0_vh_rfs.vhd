@@ -1684,8 +1684,8 @@ entity uartlite_core is
     Reset        : in  std_logic;
     -- IPIF signals
     bus2ip_data  : in  std_logic_vector(0 to 7);
-    bus2ip_rdce  : in  std_logic_vector(0 to 3);
-    bus2ip_wrce  : in  std_logic_vector(0 to 3);
+    bus2ip_rdce  : in  std_logic_vector(0 to 4);
+    bus2ip_wrce  : in  std_logic_vector(0 to 4);
     bus2ip_cs    : in  std_logic;
     ip2bus_rdack : out std_logic;
     ip2bus_wrack : out std_logic;
@@ -1786,10 +1786,10 @@ begin  -- architecture IMP
     ---------------------------------------------------------------------------
 
     ip2bus_rdack <= bus2ip_rdce(0) or bus2ip_rdce(2) or bus2ip_rdce(1) 
-                    or bus2ip_rdce(3);
+                    or bus2ip_rdce(3) or bus2ip_rdce(4);
 
     ip2bus_wrack <= bus2ip_wrce(1) or bus2ip_wrce(3) or bus2ip_wrce(0) 
-                    or bus2ip_wrce(2);
+                    or bus2ip_wrce(2) or bus2ip_wrce(4);
 
     ip2bus_error <= ((bus2ip_rdce(0) and not rx_Data_Present) or
                      (bus2ip_wrce(1) and tx_Buffer_Full) );
@@ -1936,8 +1936,15 @@ begin  -- architecture IMP
                 reset_RX_FIFO     <= bus2ip_data(6);
                 reset_TX_FIFO     <= bus2ip_data(7);
                 enable_interrupts <= bus2ip_data(3);
-				baud_sel(0 to 2)  <= bus2ip_data(0 to 2);
-				baud_sel(3 to 4)  <= bus2ip_data(4 to 5);
+				--baud_sel(0 to 2)  <= bus2ip_data(0 to 2);
+				--baud_sel(3 to 4)  <= bus2ip_data(4 to 5);
+			elsif (bus2ip_wrce(4) = '1') then
+			    --baud_sel(0 to 4)  <= bus2ip_data(0 to 4);
+				baud_sel(4)       <= bus2ip_data(7);
+				baud_sel(3)       <= bus2ip_data(6);
+				baud_sel(2)       <= bus2ip_data(5);
+				baud_sel(1)       <= bus2ip_data(4);
+				baud_sel(0)       <= bus2ip_data(3);
             else
                 reset_TX_FIFO <= '0';
                 reset_RX_FIFO <= '0';
@@ -2227,7 +2234,7 @@ entity axi_uartlite is
     C_FAMILY              : string                        := "virtex7";
     C_S_AXI_ACLK_FREQ_HZ  : integer                       := 100_000_000;
 --  -- AXI Parameters
-    C_S_AXI_ADDR_WIDTH    : integer                       := 4;
+    C_S_AXI_ADDR_WIDTH    : integer                       := 5;
     C_S_AXI_DATA_WIDTH    : integer range 32 to 128       := 32;
 --  -- UARTLite Parameters
     C_BAUDRATE            : integer                       := 9600;
@@ -2246,7 +2253,7 @@ entity axi_uartlite is
 
 -- AXI signals
       s_axi_awaddr          : in  std_logic_vector
-                              (3 downto 0);
+                              (4 downto 0);
       s_axi_awvalid         : in  std_logic;
       s_axi_awready         : out std_logic;
       s_axi_wdata           : in  std_logic_vector
@@ -2259,7 +2266,7 @@ entity axi_uartlite is
       s_axi_bvalid          : out std_logic;
       s_axi_bready          : in  std_logic;
       s_axi_araddr          : in  std_logic_vector
-                              (3 downto 0);
+                              (4 downto 0);
       s_axi_arvalid         : in  std_logic;
       s_axi_arready         : out std_logic;
       s_axi_rdata           : out std_logic_vector
@@ -2309,16 +2316,16 @@ attribute DowngradeIPIdentifiedWarnings of RTL : architecture is "yes";
             (
               -- UARTLite registers Base Address
               ZEROES & X"00000000",
-              ZEROES & (X"00000000" or X"0000000F")
+              ZEROES & (X"00000000" or X"0000001F")
             );
 
     constant C_ARD_NUM_CE_ARRAY     : INTEGER_ARRAY_TYPE :=
             (
-              0 => 4
+              0 => 5
             );
 
     constant C_S_AXI_MIN_SIZE       : std_logic_vector(31 downto 0)
-                                    := X"0000000F";
+                                    := X"0000001F";
 
     constant C_USE_WSTRB            : integer := 0;
 
@@ -2377,8 +2384,8 @@ begin  -- architecture IMP
         Clk          => bus2ip_clk,
         Reset        => bus2ip_reset,
         bus2ip_data  => bus2ip_data(7 downto 0),
-        bus2ip_rdce  => bus2ip_rdce(3 downto 0),
-        bus2ip_wrce  => bus2ip_wrce(3 downto 0),
+        bus2ip_rdce  => bus2ip_rdce(4 downto 0),
+        bus2ip_wrce  => bus2ip_wrce(4 downto 0),
         bus2ip_cs    => bus2ip_cs(0),
         ip2bus_rdack => ip2bus_rdack,
         ip2bus_wrack => ip2bus_wrack,
@@ -2397,7 +2404,7 @@ begin  -- architecture IMP
       generic map
        (
         C_FAMILY                  => C_FAMILY,
-        C_S_AXI_ADDR_WIDTH        => 4,
+        C_S_AXI_ADDR_WIDTH        => 5,
         C_S_AXI_DATA_WIDTH        => C_S_AXI_DATA_WIDTH,
         C_S_AXI_MIN_SIZE          => C_S_AXI_MIN_SIZE,
         C_USE_WSTRB               => C_USE_WSTRB,
