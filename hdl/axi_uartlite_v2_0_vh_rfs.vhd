@@ -1824,29 +1824,29 @@ begin  -- architecture IMP
 	---------------------------------------------------------------------------
 
 	RATIO_U : process (baud_sel) is
-    variable baud : integer := 115200;
+    variable baud : integer := 81;
 	begin
 	if Clk'event and Clk = '1' then
 		case baud_sel is
-			when "00000" => baud := 110;       --0
-			when "00001" => baud := 300;       --1
-			when "00010" => baud := 1200;      --2
-			when "00011" => baud := 2400;      --3
-			when "00100" => baud := 4800;      --4
-			when "00101" => baud := 9600;      --5
-			when "00110" => baud := 19200;     --6
-			when "00111" => baud := 38400;     --7
-			when "01000" => baud := 57600;     --8
-			when "01001" => baud := 115200;    --9
-			when "01010" => baud := 128000;    --A
-			when "01011" => baud := 230400;    --B
-			when "01100" => baud := 460800;    --C
-			when "01101" => baud := 921600;    --D
-			when others =>  baud := 115200;
+			when "00000" => baud := 85227; --0
+			when "00001" => baud := 31250; --1
+			when "00010" => baud := 7812;  --2
+			when "00011" => baud := 3906;  --3
+			when "00100" => baud := 1953;  --4
+			when "00101" => baud := 976;   --5
+			when "00110" => baud := 488;   --6
+			when "00111" => baud := 244;   --7
+			when "01000" => baud := 163;   --8
+			when "01001" => baud := 81;    --9
+			when "01010" => baud := 73;    --A
+			when "01011" => baud := 41;    --B
+			when "01100" => baud := 20;    --C
+			when "01101" => baud := 10;    --D
+			when others =>  baud := 81;
 		end case;
     end if;
-    RATIO <= CALC_RATIO(C_S_AXI_ACLK_FREQ_HZ, baud);
-	--RATIO <= baud;
+    --RATIO <= CALC_RATIO(C_S_AXI_ACLK_FREQ_HZ, baud);
+	RATIO <= baud;
 	end process RATIO_U;
 
     -------------------------------------------------------------------------
